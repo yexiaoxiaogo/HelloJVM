@@ -79,11 +79,11 @@ public class ClassReader {
 
             int attributeLength = dataInputStream.readInt();
             switch (attributeName) {
-                case ATTRIBUTE_SourceFile:
-                    int sourceFileIndex = dataInputStream.readUnsignedShort();
-                    String file = getString(constantPool, sourceFileIndex);
-                    System.out.println("source file:" + file);
-                    break;
+//                case ATTRIBUTE_SourceFile:
+//                    int sourceFileIndex = dataInputStream.readUnsignedShort();
+//                    String file = getString(constantPool, sourceFileIndex);
+//                    System.out.println("source file:" + file);
+//                    break;
                 case ATTRIBUTE_Code:
                     int maxStack = dataInputStream.readUnsignedShort();
                     int maxLocals = dataInputStream.readUnsignedShort();
@@ -98,14 +98,14 @@ public class ClassReader {
                     ClassFile.Attributes codeAttributes = readAttributes(dataInputStream, codeAttributeCount, constantPool);
                     attribute = new ClassFile.Code(maxStack, maxLocals, instructions, codeAttributes);
                     break;
-                case ATTRIBUTE_LineNumberTable:
-                    int length = dataInputStream.readUnsignedShort();
-                    ClassFile.LineNumberTable.Line[] lines = new ClassFile.LineNumberTable.Line[length];
-                    for (int j = 0; j < length; j++) {
-                        lines[j] = new ClassFile.LineNumberTable.Line(dataInputStream.readUnsignedShort(), dataInputStream.readUnsignedShort());
-                    }
-                    attribute = new ClassFile.LineNumberTable(lines);
-                    break;
+//                case ATTRIBUTE_LineNumberTable:
+//                    int length = dataInputStream.readUnsignedShort();
+//                    ClassFile.LineNumberTable.Line[] lines = new ClassFile.LineNumberTable.Line[length];
+//                    for (int j = 0; j < length; j++) {
+//                        lines[j] = new ClassFile.LineNumberTable.Line(dataInputStream.readUnsignedShort(), dataInputStream.readUnsignedShort());
+//                    }
+//                    attribute = new ClassFile.LineNumberTable(lines);
+//                    break;
                 default:
                     readBytes(dataInputStream, attributeLength);
             }
