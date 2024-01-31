@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="efd081f8-bee5-4bed-9719-ffbaffdd7d52" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/classFile/ClassFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/classFile/ClassReader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/classFile/InstructionReader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/classLoader/ClassLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Class.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Frame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Heap.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/MetaSpace.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Method.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Slot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Thread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/org/example/AppTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="efd081f8-bee5-4bed-9719-ffbaffdd7d52" name="Changes" comment="add readme" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -72,7 +52,20 @@
       <option name="presentableId" value="Default" />
       <updated>1706600010826</updated>
     </task>
+    <task id="LOCAL-00001" summary="add readme">
+      <option name="closed" value="true" />
+      <created>1706716198379</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1706716198379</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="add readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
