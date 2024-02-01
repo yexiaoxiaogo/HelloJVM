@@ -185,7 +185,8 @@ methodCount: 00 02
 
 
 attributeCount: 00 01
-    attrNameIndex: 00 13    =SourceFile
-    attrbiuteLength: 00 0000 02
-    sourceFileIndex: 00 14      =Hello2.java
+attributes:
+    [0]: attrNameIndex: 00 13    =SourceFile
+        attrbiuteLength: 00 0000 02
+        sourceFileIndex: 00 14      =Hello2.java
 ```

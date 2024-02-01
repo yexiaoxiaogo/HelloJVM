@@ -1,6 +1,5 @@
 package org.example.classFile;
 
-import java.io.ByteArrayInputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -107,23 +106,7 @@ public class ClassFile {
 
         public final String getString() {
 
-            ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-            StringBuilder sb = new StringBuilder();
-            while (is.available() > 0) {
-                int b = is.read();
-                if (b > 0) {
-                    sb.append((char) b);
-                } else {
-                    int b2 = is.read();
-                    if ((b2 & 0xf0) != 0xe0) {
-                        sb.append((char) ((b & 0x1F) << 6 | b2 & 0x3F));
-                    } else {
-                        int b3 = is.read();
-                        sb.append((char) ((b & 0x0F) << 12 | (b2 & 0x3F) << 6 | b3 & 0x3F));
-                    }
-                }
-            }
-            return sb.toString();
+            return new String(bytes);
         }
     }
 
@@ -158,18 +141,6 @@ public class ClassFile {
             for (Attribute attribute : attributes.attributes) {
                 if (attribute instanceof Code) {
                     return ((Code) attribute);
-                }
-            }
-            return null;
-        }
-
-        public LineNumberTable getLineNumber() {
-            if (this.getCode() == null) {
-                return null;
-            }
-            for (Attribute attribute : this.getCode().attributes.attributes) {
-                if (attribute instanceof LineNumberTable) {
-                    return ((LineNumberTable) attribute);
                 }
             }
             return null;
@@ -217,24 +188,5 @@ public class ClassFile {
             return map;
         }
 
-    }
-
-    public static class LineNumberTable extends Attribute {
-        public final Line[] lines;
-
-        public LineNumberTable(Line[] lines) {
-            this.lines = lines;
-        }
-
-        public static class Line {
-
-            public final int startPc;
-            public final int lineNumber;
-
-            public Line(int startPc, int lineNumber) {
-                this.startPc = startPc;
-                this.lineNumber = lineNumber;
-            }
-        }
     }
 }

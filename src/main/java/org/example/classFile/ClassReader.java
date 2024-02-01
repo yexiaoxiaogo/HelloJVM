@@ -13,8 +13,6 @@ public class ClassReader {
 
     //属性信息的类型
     public static final String ATTRIBUTE_Code = "Code";
-    public static final String ATTRIBUTE_SourceFile = "SourceFile";
-    public static final String ATTRIBUTE_LineNumberTable = "LineNumberTable";
 
 
     public static ClassFile read(String path) throws IOException {
@@ -70,52 +68,35 @@ public class ClassReader {
     }
 
     private static ClassFile.Attributes readAttributes(DataInputStream dataInputStream, int attributeCount, ClassFile.ConstantPool constantPool) throws IOException {
-
         ClassFile.Attributes attributes = new ClassFile.Attributes(attributeCount);
         for (int i = 0; i < attributeCount; i++) {
             ClassFile.Attribute attribute = null;
             int attributeNameIndex = dataInputStream.readUnsignedShort();
             String attributeName = getString(constantPool, attributeNameIndex);
-
             int attributeLength = dataInputStream.readInt();
-            switch (attributeName) {
-//                case ATTRIBUTE_SourceFile:
-//                    int sourceFileIndex = dataInputStream.readUnsignedShort();
-//                    String file = getString(constantPool, sourceFileIndex);
-//                    System.out.println("source file:" + file);
-//                    break;
-                case ATTRIBUTE_Code:
-                    int maxStack = dataInputStream.readUnsignedShort();
-                    int maxLocals = dataInputStream.readUnsignedShort();
+            if (ATTRIBUTE_Code.equals(attributeName)) {
+                int maxStack = dataInputStream.readUnsignedShort();
+                int maxLocals = dataInputStream.readUnsignedShort();
 
-                    int codeLength = dataInputStream.readInt();
-                    byte[] byteCode = readBytes(dataInputStream, codeLength);
-                    InstructionReader.Instruction[] instructions = readByteCode(byteCode, constantPool);
-                    // exceptionTableLength 为空 消费掉 没有操作
-                    dataInputStream.readUnsignedShort();
+                int codeLength = dataInputStream.readInt();
+                byte[] byteCode = readBytes(dataInputStream, codeLength);
+                InstructionReader.Instruction[] instructions = readByteCode(byteCode);
+                // exceptionTableLength 为空 消费掉 没有操作
+                dataInputStream.readUnsignedShort();
 
-                    int codeAttributeCount = dataInputStream.readUnsignedShort();
-                    ClassFile.Attributes codeAttributes = readAttributes(dataInputStream, codeAttributeCount, constantPool);
-                    attribute = new ClassFile.Code(maxStack, maxLocals, instructions, codeAttributes);
-                    break;
-//                case ATTRIBUTE_LineNumberTable:
-//                    int length = dataInputStream.readUnsignedShort();
-//                    ClassFile.LineNumberTable.Line[] lines = new ClassFile.LineNumberTable.Line[length];
-//                    for (int j = 0; j < length; j++) {
-//                        lines[j] = new ClassFile.LineNumberTable.Line(dataInputStream.readUnsignedShort(), dataInputStream.readUnsignedShort());
-//                    }
-//                    attribute = new ClassFile.LineNumberTable(lines);
-//                    break;
-                default:
-                    readBytes(dataInputStream, attributeLength);
+                int codeAttributeCount = dataInputStream.readUnsignedShort();
+                ClassFile.Attributes codeAttributes = readAttributes(dataInputStream, codeAttributeCount, constantPool);
+                attribute = new ClassFile.Code(maxStack, maxLocals, instructions, codeAttributes);
+            } else {
+                // 只要code属性的拿到指令即可，其他的消费掉不要即可
+                readBytes(dataInputStream, attributeLength);
             }
-
             attributes.attributes[i] = attribute;
         }
         return attributes;
     }
 
-    private static InstructionReader.Instruction[] readByteCode(byte[] byteCode, ClassFile.ConstantPool constantPool) throws IOException {
+    private static InstructionReader.Instruction[] readByteCode(byte[] byteCode) throws IOException {
         List<InstructionReader.Instruction> instructions = new ArrayList<>();
         try (DataInputStream stm = new DataInputStream(new ByteArrayInputStream(byteCode))) {
             while (stm.available() > 0) {

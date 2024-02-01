@@ -14,23 +14,18 @@ import java.io.IOException;
  */
 public class App 
 {
-    public static void main( String[] args ) throws IOException {
-        //解析入参
-        Args cmd = parseArgs(args);
-
-        //搜索类路径
-        ClassLoader classLoader = new ClassLoader("boot", cmd.classPath);
+    public static void main(String[] args) throws IOException {
+        //.class文件的路径和name测试数据写死
+        Args cmd = new Args();
 
         //初始化
         MetaSpace.main = new Thread(1024);
 
         //加载主类
-        String mainClass = cmd.className;
-        classLoader.loadClass(mainClass);
+        Class aClass = ClassLoader.loadClass(cmd);
 
         // 查找主函数
-        Class clazz = Heap.findClass(mainClass);
-        Method method = clazz.getMainMethod();
+        Method method = aClass.getMainMethod();
 
         // 运行主函数
         runMain(method);
@@ -61,20 +56,9 @@ public class App
 
     }
 
-    // 解析入参 入参固定格式为 -cp classpath classname
-    private static Args parseArgs(String[] args){
-        Args args1 = new Args();
-        args1.MINUS_CP = args[0];
-        args1.classPath = args[1];
-        args1.className = args[2];
-        return args1;
-    }
-
     public static class Args {
-        public String MINUS_CP;
+        public String classPath = "/Users/yxx/Downloads/mini-jvm-master/example/target/classes";
 
-        public String classPath;
-
-        public String className;
+        public String className = "Hello2";
     }
 }
