@@ -18,7 +18,6 @@ public class Method {
     public final int maxStacks;
 
     public final Map<Integer, InstructionReader.Instruction> instructionMap;
-    public Class clazz;
 
     public Method(int accessFlags, String name, String descriptor, int maxStacks, int maxLocals,
                   Map<Integer, InstructionReader.Instruction> instructionMap) {

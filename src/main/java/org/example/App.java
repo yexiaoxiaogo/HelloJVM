@@ -21,9 +21,6 @@ public class App
         //.class文件的路径和name测试数据写死
         Args cmd = new Args();
 
-        //初始化
-        MetaSpace.main = new Thread(1024);
-
         // 查找主函数
         Method method = null;
         // 读取文件
@@ -46,6 +43,9 @@ public class App
      * @param method
      */
     private static void runMain(Method method) {
+        //初始化
+        MetaSpace.main = new Thread(1024);
+
         Frame frame = new Frame(method);
         //执行
         final Thread env = MetaSpace.getMainEnv();
