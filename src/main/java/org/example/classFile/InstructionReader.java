@@ -2,7 +2,6 @@ package org.example.classFile;
 
 import org.example.rtda.Frame;
 import org.example.rtda.MetaSpace;
-import org.example.rtda.Slot;
 import org.example.rtda.Thread;
 
 import java.io.DataInputStream;
@@ -23,9 +22,6 @@ public class InstructionReader {
             case 0x1c:
                 return new ILoad2Inst();
 
-            case 0x2a:
-                return new ALoad0Inst();
-
             case 0x3c:
                 return new IStore1Inst();
             case 0x3d:
@@ -40,10 +36,6 @@ public class InstructionReader {
             case 0xb1:
                 return new ReturnInst();
 
-            case 0xb7:
-                // classfile中b7读走消费
-                stm.readUnsignedShort();
-                return new EmptyInstruction();
             default:
                 return null;
         }
@@ -58,14 +50,6 @@ public class InstructionReader {
         }
 
         void execute(Frame frame);
-    }
-
-    // empty
-    public static class EmptyInstruction implements Instruction{
-        @Override
-        public void execute(Frame frame) {
-
-        }
     }
 
     // constants
@@ -104,15 +88,6 @@ public class InstructionReader {
     }
 
     // loads
-    public static class ALoad0Inst implements Instruction {
-
-        @Override
-        public void execute(Frame frame) {
-            Slot.Instance tmp = frame.getRef(0);
-            frame.pushRef(tmp);
-        }
-    }
-
     public static class ILoad1Inst implements Instruction {
         @Override
         public void execute(Frame frame) {

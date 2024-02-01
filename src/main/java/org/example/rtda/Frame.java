@@ -28,6 +28,24 @@ public class Frame {
     public int stat;
 
     /**
+     * slot 基本存储单元
+     */
+    public class Slot {
+        public Integer num;
+
+        public Slot(int num) {
+            this.num = num;
+        }
+
+
+        @Override
+        public String toString() {
+            String sb = "Slot{" + "num=" + num + '}';
+            return sb;
+        }
+    }
+
+    /**
      * 本地变量
      */
     public class LocalVars {
@@ -39,9 +57,6 @@ public class Frame {
 
         public String toString() {
             return Arrays.stream(slots).map(t -> t == null ? "" : t.toString()).collect(Collectors.joining("\n"));
-        }
-        public Slot.Instance getRef(int index) {
-            return slots[index].ref;
         }
 
         public int getInt(int index) {
@@ -64,15 +79,8 @@ public class Frame {
             top = 0;
         }
 
-        public void push(Slot slot) {
-            this.slots[top++] = slot;
-        }
         public void pushInt(int val) {
             this.slots[top++] = new Slot(val);
-        }
-
-        public void pushRef(Slot.Instance val) {
-            this.push(new Slot(val));
         }
 
         public Slot pop() {
@@ -104,9 +112,6 @@ public class Frame {
         return this.localVars.toString();
     }
 
-    public Slot.Instance getRef(int index) {
-        return this.localVars.getRef(index);
-    }
 
     public int getInt(int index) {
         return this.localVars.getInt(index);
@@ -118,10 +123,6 @@ public class Frame {
 
     public void pushInt(int val) {
         this.operandStack.pushInt(val);
-    }
-
-    public void pushRef(Slot.Instance val) {
-        this.operandStack.pushRef(val);
     }
 
     public int popInt() {
