@@ -1,12 +1,15 @@
 package org.example;
 
+import org.example.classFile.ClassFile;
+import org.example.classFile.ClassReader;
 import org.example.classFile.InstructionReader;
-import org.example.classLoader.ClassLoader;
-import org.example.rtda.Class;
+import org.example.rtda.Frame;
+import org.example.rtda.MetaSpace;
+import org.example.rtda.Method;
 import org.example.rtda.Thread;
-import org.example.rtda.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Hello world!
@@ -21,11 +24,17 @@ public class App
         //初始化
         MetaSpace.main = new Thread(1024);
 
-        //加载主类
-        Class aClass = ClassLoader.loadClass(cmd);
-
         // 查找主函数
-        Method method = aClass.getMainMethod();
+        Method method = null;
+        // 读取文件
+        ClassFile classFile = ClassReader.read(cmd.classPath + "/" + cmd.className + ".class");
+        // 只找主方法
+        for (ClassFile.MethodInfo methodInfo : classFile.methods.methodInfos) {
+            if (Objects.equals("main", methodInfo.name)) {
+                ClassFile.Code code = methodInfo.getCode();
+                method = new Method(methodInfo.accessFlags, methodInfo.name, methodInfo.descriptor, code.maxStacks, code.maxLocals, code.getInstructions());
+            }
+        }
 
         // 运行主函数
         runMain(method);
@@ -52,7 +61,7 @@ public class App
 
         } while (frame.stat == Frame.FRAME_RUNNING);
 
-        System.out.println("execute result: \n" + frame.getLocalVars());
+        System.out.println("execute result:" + frame.getLocalVars());
 
     }
 
