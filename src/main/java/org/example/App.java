@@ -4,9 +4,6 @@ import org.example.classFile.ClassFile;
 import org.example.classFile.ClassReader;
 import org.example.classFile.InstructionReader;
 import org.example.rtda.Frame;
-import org.example.rtda.MetaSpace;
-import org.example.rtda.Method;
-import org.example.rtda.Thread;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -21,43 +18,35 @@ public class App
         //.class文件的路径和name测试数据写死
         Args cmd = new Args();
 
-        // 查找主函数
-        Method method = null;
         // 读取文件
         ClassFile classFile = ClassReader.read(cmd.classPath + "/" + cmd.className + ".class");
-        // 只找主方法
+
+        // 只找主方法,获得指令集，new frame
+        Frame frame = null;
         for (ClassFile.MethodInfo methodInfo : classFile.methods.methodInfos) {
             if (Objects.equals("main", methodInfo.name)) {
                 ClassFile.Code code = methodInfo.getCode();
-                method = new Method(methodInfo.accessFlags, methodInfo.name, methodInfo.descriptor, code.maxStacks, code.maxLocals, code.getInstructions());
+                frame = new Frame(code.maxLocals, code.maxStacks, code.getInstructions());
             }
         }
 
         // 运行主函数
-        runMain(method);
+        runMain(frame);
 
     }
 
     /**
      * 解释器
-     * @param method
+     * @param frame
      */
-    private static void runMain(Method method) {
-        //初始化
-        MetaSpace.main = new Thread(1024);
-
-        Frame frame = new Frame(method);
+    private static void runMain(Frame frame) {
         //执行
-        final Thread env = MetaSpace.getMainEnv();
-        env.pushFrame(frame);
-
         frame.stat = Frame.FRAME_RUNNING;
         do {
-            Frame topFrame = env.topFrame();
-            InstructionReader.Instruction instruction = topFrame.getInst();
-            topFrame.nextPc += instruction.offset();
+            InstructionReader.Instruction instruction = frame.getInst();
+            frame.nextPc += instruction.offset();
 
-            instruction.execute(topFrame);
+            instruction.execute(frame);
 
         } while (frame.stat == Frame.FRAME_RUNNING);
 

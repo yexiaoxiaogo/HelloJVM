@@ -5,11 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="efd081f8-bee5-4bed-9719-ffbaffdd7d52" name="Changes" comment="update 不找主类，直接找到主方法。指令只在main方法里面">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/classFile/InstructionReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/classFile/InstructionReader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/rtda/Frame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/rtda/Frame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/rtda/Slot.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/rtda/MetaSpace.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/rtda/Method.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/rtda/Thread.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,16 +145,5 @@
     <MESSAGE value="update v1" />
     <MESSAGE value="update 不找主类，直接找到主方法。指令只在main方法里面" />
     <option name="LAST_COMMIT_MESSAGE" value="update 不找主类，直接找到主方法。指令只在main方法里面" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/example/App.java</url>
-          <line>53</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

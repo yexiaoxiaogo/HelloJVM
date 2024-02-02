@@ -1,8 +1,7 @@
 package org.example.classFile;
 
+import org.example.App;
 import org.example.rtda.Frame;
-import org.example.rtda.MetaSpace;
-import org.example.rtda.Thread;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -77,12 +76,9 @@ public class InstructionReader {
     public static class ReturnInst implements Instruction {
         @Override
         public void execute(Frame frame) {
-            final Thread env = MetaSpace.getMainEnv();
-            final Frame old = env.popFrame();
-
             // 解释器同步执行方法的结束条件
-            if (old.stat == Frame.FRAME_RUNNING) {
-                old.stat = Frame.FRAME_END;
+            if (frame.stat == Frame.FRAME_RUNNING) {
+                frame.stat = Frame.FRAME_END;
             }
         }
     }

@@ -10,9 +10,9 @@ public class Frame {
 
     public static final int FRAME_RUNNING = 1;
     public static final int FRAME_END = 2;
-    public final Method method;
 
-    public final Thread thread;
+    // 状态 FRAME_RUNNING = 1; FRAME_END = 2;
+    public static int stat;
 
     private final LocalVars localVars;
 
@@ -23,9 +23,6 @@ public class Frame {
     private int pc;
 
     public int nextPc;
-
-    // 状态 FRAME_RUNNING = 1; FRAME_END = 2;
-    public int stat;
 
     /**
      * slot 基本存储单元
@@ -95,12 +92,10 @@ public class Frame {
         }
     }
 
-    public Frame(Method method) {
-        this.method = method;
-        this.localVars = new LocalVars(method.maxLocals);
-        this.operandStack = new OperandStack(method.maxStacks);
-        this.thread = MetaSpace.getMainEnv();
-        this.instructionMap = method.instructionMap;
+    public Frame(int maxLocals,  int maxStacks, Map<Integer, InstructionReader.Instruction> instructionMap) {
+        this.localVars = new LocalVars(maxLocals);
+        this.operandStack = new OperandStack(maxStacks);
+        this.instructionMap = instructionMap;
     }
 
     public InstructionReader.Instruction getInst() {
