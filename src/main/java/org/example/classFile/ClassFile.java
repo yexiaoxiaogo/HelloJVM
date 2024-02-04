@@ -124,16 +124,12 @@ public class ClassFile {
      * 方法信息
      */
     public static class MethodInfo {
-        public final int accessFlags;
         public final String name;
 
-        public final String descriptor;
         public final Attributes attributes;
 
-        public MethodInfo(int accessFlags, String name, String descriptor, Attributes attributes) {
-            this.accessFlags = accessFlags;
+        public MethodInfo(String name, Attributes attributes) {
             this.name = name;
-            this.descriptor = descriptor;
             this.attributes = attributes;
         }
 

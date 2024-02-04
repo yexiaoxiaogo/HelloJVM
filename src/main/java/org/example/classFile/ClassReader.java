@@ -121,6 +121,7 @@ public class ClassReader {
     private static ClassFile.Methods readMethods(DataInputStream dataInputStream, int methodCount, ClassFile.ConstantPool constantPool) throws IOException {
         ClassFile.Methods methods = new ClassFile.Methods(methodCount);
         for (int i = 0; i < methodCount; i++) {
+            // accessFlags，descriptorIndex 无用但是需要消费掉，顺序不能变
             int accessFlags = dataInputStream.readUnsignedShort();
             int nameIndex = dataInputStream.readUnsignedShort();
             int descriptorIndex = dataInputStream.readUnsignedShort();
@@ -130,9 +131,7 @@ public class ClassReader {
             ClassFile.ConstantInfo info = constantPool.infos[nameIndex -1];
             String name = ((ClassFile.Utf8) info).getString();
 
-            String descriptor = ((ClassFile.Utf8) constantPool.infos[descriptorIndex - 1]).getString();
-
-            methods.methodInfos[i] = new ClassFile.MethodInfo(accessFlags, name, descriptor, attributes);
+            methods.methodInfos[i] = new ClassFile.MethodInfo(name, attributes);
         }
 
         return methods;
