@@ -1,47 +1,34 @@
 package org.example.classFile;
 
-import org.example.App;
 import org.example.rtda.Frame;
-
-import java.io.DataInputStream;
-import java.io.IOException;
 
 /**
  * 从classfile中读取二进制码，转换成指令，执行
  */
 public class InstructionReader {
 
-
-    public static Instruction read(int opCode, byte[] bytes, int pc) throws IOException {
+    public static Instruction read(int opCode, byte[] bytes, int pc) {
 
         switch (opCode) {
             case 0x10:
                 return new BiPushInst(bytes[pc + 1]);
-
             case 0x1b:
                 return new ILoad1Inst();
             case 0x1c:
                 return new ILoad2Inst();
-
             case 0x3c:
                 return new IStore1Inst();
             case 0x3d:
                 return new IStore2Inst();
             case 0x3e:
                 return new IStore3Inst();
-
             case 0x60:
                 return new IAddInst();
-
-
             case 0xb1:
                 return new ReturnInst();
-
             default:
                 return null;
         }
-
-
     }
 
     /**

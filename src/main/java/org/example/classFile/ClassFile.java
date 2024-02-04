@@ -1,8 +1,5 @@
 package org.example.classFile;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * 顺序是固定的，不可改变。classfile读取字节
  */

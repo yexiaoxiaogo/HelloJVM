@@ -1,9 +1,6 @@
 package org.example.rtda;
 
-import org.example.classFile.InstructionReader;
-
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Frame {
@@ -20,15 +17,45 @@ public class Frame {
 
     public final byte[] byteCode;
 
-    public int pc = 0;
+    public int pc;
 
     public int nextPc;
+
+    public Frame(int maxLocals,  int maxStacks, byte[] byteCode) {
+        this.localVars = new LocalVars(maxLocals);
+        this.operandStack = new OperandStack(maxStacks);
+        this.byteCode = byteCode;
+        this.pc = 0;
+        this.nextPc = 0;
+    }
+
+
+    public String getLocalVars() {
+        return this.localVars.toString();
+    }
+
+
+    public int getInt(int index) {
+        return this.localVars.getInt(index);
+    }
+
+    public void setInt(int index, int val) {
+        this.localVars.setInt(index, val);
+    }
+
+    public void pushInt(int val) {
+        this.operandStack.pushInt(val);
+    }
+
+    public int popInt() {
+        return this.operandStack.popInt();
+    }
 
     /**
      * slot 基本存储单元
      */
     public class Slot {
-        public Integer num;
+        public int num;
 
         public Slot(int num) {
             this.num = num;
@@ -90,34 +117,5 @@ public class Frame {
         public int popInt() {
             return this.pop().num;
         }
-    }
-
-    public Frame(int maxLocals,  int maxStacks, byte[] byteCode) {
-        this.localVars = new LocalVars(maxLocals);
-        this.operandStack = new OperandStack(maxStacks);
-        this.byteCode = byteCode;
-        this.pc = 0;
-    }
-
-
-    public String getLocalVars() {
-        return this.localVars.toString();
-    }
-
-
-    public int getInt(int index) {
-        return this.localVars.getInt(index);
-    }
-
-    public void setInt(int index, int val) {
-        this.localVars.setInt(index, val);
-    }
-
-    public void pushInt(int val) {
-        this.operandStack.pushInt(val);
-    }
-
-    public int popInt() {
-        return this.operandStack.popInt();
     }
 }

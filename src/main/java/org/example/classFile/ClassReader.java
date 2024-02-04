@@ -1,8 +1,6 @@
 package org.example.classFile;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ClassReader {
@@ -15,10 +13,10 @@ public class ClassReader {
     //属性信息的类型
     public static final String ATTRIBUTE_Code = "Code";
 
-    
 
     /**
      * 从常量池中匹配属性名
+     *
      * @param cp
      * @param index
      * @return
@@ -29,14 +27,15 @@ public class ClassReader {
 
     /**
      * 读取指定字节数量
+     *
      * @param stm
      * @param length
      * @return
      * @throws IOException
      */
-    public static byte[] readBytes( DataInputStream stm, int length) throws IOException {
+    public static byte[] readBytes(DataInputStream stm, int length) throws IOException {
         byte[] bytes = new byte[length];
-        for (int i = 0; i  < length; i++) {
+        for (int i = 0; i < length; i++) {
             bytes[i] = stm.readByte();
         }
         return bytes;
@@ -45,6 +44,7 @@ public class ClassReader {
 
     /**
      * 读取.class文件
+     *
      * @param path
      * @return
      */
@@ -75,8 +75,8 @@ public class ClassReader {
         ClassFile.Attributes attributes = readAttributes(is, attributesCount, cpInfo);
 
         return new ClassFile(magic, minorVersion, majorVersion, constantPoolSize,
-        cpInfo, accessFlags, thisClass, superClass, interfacesCount,
-        fieldCount, methodsCount, methods, attributesCount, attributes);
+                cpInfo, accessFlags, thisClass, superClass, interfacesCount,
+                fieldCount, methodsCount, methods, attributesCount, attributes);
     }
 
     private static ClassFile.Attributes readAttributes(DataInputStream is, int attributesCount, ClassFile.ConstantPool cpInfo) throws IOException {
