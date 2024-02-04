@@ -4,9 +4,6 @@ import org.example.classFile.ClassFile;
 import org.example.classFile.ClassReader;
 import org.example.classFile.InstructionReader;
 import org.example.rtda.Frame;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
