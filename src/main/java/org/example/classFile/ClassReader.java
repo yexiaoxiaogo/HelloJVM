@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ClassReader {
     // 常量信息的类型
     public static final int CONSTANT_Utf8 = 1;
@@ -14,167 +15,161 @@ public class ClassReader {
     //属性信息的类型
     public static final String ATTRIBUTE_Code = "Code";
 
+    
 
-    public static ClassFile read(String path) throws IOException {
-        try (InputStream is = new FileInputStream(path);
-             DataInputStream dataInputStream = new DataInputStream(is)){
-            // read
-            return read(dataInputStream);
-        }
+    /**
+     * 从常量池中匹配属性名
+     * @param cp
+     * @param index
+     * @return
+     */
+    public static String getNameFromCP(ClassFile.ConstantPool cp, int index) {
+        return ((ClassFile.Utf8) cp.infos[index - 1]).getString();
     }
 
     /**
-     * 按顺序读取.class文件的内容
-     * @param dataInputStream
+     * 读取指定字节数量
+     * @param stm
+     * @param length
      * @return
+     * @throws IOException
      */
-    private static ClassFile read(DataInputStream dataInputStream) throws IOException {
-
-        int magic = dataInputStream.readInt();
-        int minorVersion = dataInputStream.readUnsignedShort();
-        int majorVersion = dataInputStream.readUnsignedShort();
-        int cpSize = dataInputStream.readUnsignedShort();
-        /**
-         * 表头给出的常量池大小比实际大1。假设表头给出的值是n，那么常量池的实际大小是n–1。
-         * 第二，有效的常量池索引是1~n–1。0是无效索引，表示不指向任何常量
-         */
-        ClassFile.ConstantPool constantPool = readConstantPool(dataInputStream, cpSize - 1);
-        int accessFlag = dataInputStream.readUnsignedShort();
-        int thisClass = dataInputStream.readUnsignedShort();
-        int superClass = dataInputStream.readUnsignedShort();
-        int interfaceCount = dataInputStream.readUnsignedShort();
-        int fieldCount = dataInputStream.readUnsignedShort();
-        int methodCount = dataInputStream.readUnsignedShort();
-        ClassFile.Methods methods = readMethods(dataInputStream, methodCount, constantPool);
-        int attributeCount = dataInputStream.readUnsignedShort();
-        ClassFile.Attributes attributes =  readAttributes(dataInputStream, attributeCount, constantPool);
-
-        return new ClassFile(
-                magic,
-                minorVersion,
-                majorVersion,
-                cpSize,
-                constantPool,
-                accessFlag,
-                thisClass,
-                superClass,
-                interfaceCount,
-                fieldCount,
-                methodCount,
-                methods,
-                attributeCount,
-                attributes
-        );
+    public static byte[] readBytes( DataInputStream stm, int length) throws IOException {
+        byte[] bytes = new byte[length];
+        for (int i = 0; i  < length; i++) {
+            bytes[i] = stm.readByte();
+        }
+        return bytes;
     }
 
-    private static ClassFile.Attributes readAttributes(DataInputStream dataInputStream, int attributeCount, ClassFile.ConstantPool constantPool) throws IOException {
-        ClassFile.Attributes attributes = new ClassFile.Attributes(attributeCount);
-        for (int i = 0; i < attributeCount; i++) {
+
+    /**
+     * 读取.class文件
+     * @param path
+     * @return
+     */
+    public static ClassFile read(String path) throws IOException {
+        // JVM规范，读取顺序不能变。字节大小不能变。
+        InputStream in = new FileInputStream(path);
+        DataInputStream is = new DataInputStream(in);
+        int magic = is.readInt();
+        int minorVersion = is.readUnsignedShort();
+        int majorVersion = is.readUnsignedShort();
+
+        int constantPoolSize = is.readUnsignedShort();
+        // 常量池大小包括了属性constantPoolSize本身，所以常量池真正的大小需要-1 减去constantPoolSize本身
+        ClassFile.ConstantPool cpInfo = readConstantPool(is, constantPoolSize - 1);
+
+        int accessFlags = is.readUnsignedShort();
+        int thisClass = is.readUnsignedShort();
+        int superClass = is.readUnsignedShort();
+        // 接口数是0，省略接口表的读取
+        int interfacesCount = is.readUnsignedShort();
+        // 字段数是0，省略字段表的读取
+        int fieldCount = is.readUnsignedShort();
+
+        int methodsCount = is.readUnsignedShort();
+        ClassFile.Methods methods = readMethods(is, methodsCount, cpInfo);
+
+        int attributesCount = is.readUnsignedShort();
+        ClassFile.Attributes attributes = readAttributes(is, attributesCount, cpInfo);
+
+        return new ClassFile(magic, minorVersion, majorVersion, constantPoolSize,
+        cpInfo, accessFlags, thisClass, superClass, interfacesCount,
+        fieldCount, methodsCount, methods, attributesCount, attributes);
+    }
+
+    private static ClassFile.Attributes readAttributes(DataInputStream is, int attributesCount, ClassFile.ConstantPool cpInfo) throws IOException {
+        ClassFile.Attributes attributes = new ClassFile.Attributes(attributesCount);
+        for (int i = 0; i < attributesCount; i++) {
             ClassFile.Attribute attribute = null;
-            int attributeNameIndex = dataInputStream.readUnsignedShort();
-            String attributeName = getString(constantPool, attributeNameIndex);
-            int attributeLength = dataInputStream.readInt();
-            if (ATTRIBUTE_Code.equals(attributeName)) {
-                int maxStack = dataInputStream.readUnsignedShort();
-                int maxLocals = dataInputStream.readUnsignedShort();
+            int attrNameIndex = is.readUnsignedShort();
+            int attrLength = is.readInt();
+            String attrName = getNameFromCP(cpInfo, attrNameIndex);
+            if (ATTRIBUTE_Code.equals(attrName)) {
+                // 只处理code，里面有指令
+                int maxStack = is.readUnsignedShort();
+                int maxLocals = is.readUnsignedShort();
+                int codeLength = is.readInt();
+                // 读取转指令
+                byte[] byteCode = readBytes(is, codeLength);
+                InstructionReader.Instruction[] instructions = getInstruction(byteCode);
+                // exceptionTalbeLength 无用但是要消费掉
+                int exceptionTalbeLength = is.readUnsignedShort();
+                // 属性里，code类型属性的属性，消费掉里面的字节
+                int codeAttributeCount = is.readUnsignedShort();
+                readAttributes(is, codeAttributeCount, cpInfo);
+                attribute = new ClassFile.Code(maxStack, maxLocals, instructions);
 
-                int codeLength = dataInputStream.readInt();
-                byte[] byteCode = readBytes(dataInputStream, codeLength);
-                InstructionReader.Instruction[] instructions = readByteCode(byteCode);
-                // exceptionTableLength 为空 消费掉 没有操作
-                dataInputStream.readUnsignedShort();
-
-                int codeAttributeCount = dataInputStream.readUnsignedShort();
-                ClassFile.Attributes codeAttributes = readAttributes(dataInputStream, codeAttributeCount, constantPool);
-                attribute = new ClassFile.Code(maxStack, maxLocals, instructions, codeAttributes);
             } else {
-                // 只要code属性的拿到指令即可，其他的消费掉不要即可
-                readBytes(dataInputStream, attributeLength);
+                // 其他的不管，读取掉length长度的内容即可
+                readBytes(is, attrLength);
             }
+
             attributes.attributes[i] = attribute;
         }
         return attributes;
     }
 
-    private static InstructionReader.Instruction[] readByteCode(byte[] byteCode) throws IOException {
-        List<InstructionReader.Instruction> instructions = new ArrayList<>();
-        try (DataInputStream stm = new DataInputStream(new ByteArrayInputStream(byteCode))) {
-            while (stm.available() > 0) {
-                int opCode = stm.readUnsignedByte();
-                try {
-                    InstructionReader.Instruction instruction = InstructionReader.read(opCode, stm);
-                    if (instruction == null) {
-                        break;
-                    }
-                    instructions.add(instruction);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    private static InstructionReader.Instruction[] getInstruction(byte[] byteCode) throws IOException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteCode);
+        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+        List<InstructionReader.Instruction> instructionList = new ArrayList<>();
+        while (dataInputStream.available() > 0) {
+            int opCode = dataInputStream.readUnsignedByte();
+            InstructionReader.Instruction read = InstructionReader.read(opCode, dataInputStream);
+            if (read == null) {
+                break;
             }
-
+            instructionList.add(read);
         }
-        InstructionReader.Instruction[] ret = new InstructionReader.Instruction[instructions.size()];
-        instructions.toArray(ret);
-        return ret;
+        InstructionReader.Instruction[] instructions = new InstructionReader.Instruction[instructionList.size()];
+        instructionList.toArray(instructions);
+        return instructions;
     }
 
-    private static ClassFile.Methods readMethods(DataInputStream dataInputStream, int methodCount, ClassFile.ConstantPool constantPool) throws IOException {
-        ClassFile.Methods methods = new ClassFile.Methods(methodCount);
-        for (int i = 0; i < methodCount; i++) {
-            // accessFlags，descriptorIndex 无用但是需要消费掉，顺序不能变
-            int accessFlags = dataInputStream.readUnsignedShort();
-            int nameIndex = dataInputStream.readUnsignedShort();
-            int descriptorIndex = dataInputStream.readUnsignedShort();
-            int attributesCount = dataInputStream.readUnsignedShort();
-            ClassFile.Attributes attributes = readAttributes(dataInputStream, attributesCount, constantPool);
+    private static ClassFile.Methods readMethods(DataInputStream is, int methodsCount, ClassFile.ConstantPool cpInfo) throws IOException {
+        ClassFile.Methods methods = new ClassFile.Methods(methodsCount);
+        for (int i = 0; i < methodsCount; i++) {
+            // accessFlag,descIndex 这里无用但要读取掉。
+            int accessFlag = is.readUnsignedShort();
+            int nameIndex = is.readUnsignedShort();
+            int descIndex = is.readUnsignedShort();
 
-            ClassFile.ConstantInfo info = constantPool.infos[nameIndex -1];
-            String name = ((ClassFile.Utf8) info).getString();
+            int attrCount = is.readUnsignedShort();
+            ClassFile.Attributes attributes = readAttributes(is, attrCount, cpInfo);
 
-            methods.methodInfos[i] = new ClassFile.MethodInfo(name, attributes);
+            // 从常量池中得到方法名，后面需要查找main方法
+            String methodName = getNameFromCP(cpInfo, nameIndex);
+            methods.methodInfos[i] = new ClassFile.MethodInfo(methodName, attributes);
         }
-
         return methods;
     }
 
-    private static ClassFile.ConstantPool readConstantPool(DataInputStream dataInputStream, int cpSize) throws IOException {
-        ClassFile.ConstantPool constantPool = new ClassFile.ConstantPool(cpSize);
-        for (int i = 0; i < cpSize; i++) {
-            int tag = dataInputStream.readUnsignedByte();
-            int infoEnum = tag;
+    private static ClassFile.ConstantPool readConstantPool(DataInputStream is, int constantPoolSize) throws IOException {
+
+        ClassFile.ConstantPool constantPool = new ClassFile.ConstantPool(constantPoolSize);
+        for (int i = 0; i < constantPoolSize; i++) {
             ClassFile.ConstantInfo info = null;
-            switch (infoEnum) {
-                case CONSTANT_Utf8:
-                    int length = dataInputStream.readUnsignedShort();
-                    byte[] bytes = readBytes(dataInputStream, length);
-                    info = new ClassFile.Utf8(infoEnum, bytes);
+            int constantPoolType = is.readUnsignedByte();
+            switch (constantPoolType) {
+                case CONSTANT_Methodref:
+                case CONSTANT_NameAndType:
+                    // 读走4个,不处理
+                    readBytes(is, 4);
                     break;
                 case CONSTANT_Class:
-                    info = new ClassFile.ClassCp(infoEnum, dataInputStream.readUnsignedShort());
+                    // 读走两个不处理
+                    readBytes(is, 2);
                     break;
-                case CONSTANT_Methodref:
-                    info = new ClassFile.MethodDef(infoEnum, dataInputStream.readUnsignedShort(),dataInputStream.readUnsignedShort());
-                    break;
-                case CONSTANT_NameAndType:
-                    info = new ClassFile.NameAndType(infoEnum, dataInputStream.readUnsignedShort(), dataInputStream.readUnsignedShort());
+                case CONSTANT_Utf8:
+                    int length = is.readUnsignedShort();
+                    byte[] bytes = readBytes(is, length);
+                    info = new ClassFile.Utf8(constantPoolType, bytes);
                     break;
             }
             constantPool.infos[i] = info;
         }
         return constantPool;
     }
-
-    public static byte[] readBytes(DataInputStream stm, int length) throws IOException {
-        byte[] bytes = new byte[length];
-        for (int i = 0; i < length; i++) {
-            bytes[i] = stm.readByte();
-        }
-        return bytes;
-    }
-
-    public static String getString(ClassFile.ConstantPool cp, int index) {
-
-        return ((ClassFile.Utf8) cp.infos[index - 1]).getString();
-    }
-
 }

@@ -65,37 +65,6 @@ public class ClassFile {
     }
 
     // 不同的常量信息类型
-    public static class ClassCp extends ConstantInfo {
-        public final int nameIndex;
-
-        public ClassCp(int infoEnum, int nameIndex) {
-            super(infoEnum);
-            this.nameIndex = nameIndex;
-        }
-    }
-
-    public static class MethodDef extends ConstantInfo {
-        public final int classIndex;
-        public final int nameAndTypeIndex;
-
-        public MethodDef(int infoEnum, int classIndex, int nameAndTypeIndex) {
-            super(infoEnum);
-            this.classIndex = classIndex;
-            this.nameAndTypeIndex = nameAndTypeIndex;
-        }
-    }
-
-    public static class NameAndType extends ConstantInfo {
-        public final int nameIndex;
-        public final int descriptionIndex;
-
-        public NameAndType(int infoEnum, int nameIndex, int descriptionIndex) {
-            super(infoEnum);
-            this.nameIndex = nameIndex;
-            this.descriptionIndex = descriptionIndex;
-        }
-    }
-
     public static class Utf8 extends ConstantInfo {
         public final byte[] bytes;
 
@@ -165,13 +134,11 @@ public class ClassFile {
         public final int maxStacks;
         public final int maxLocals;
         public final InstructionReader.Instruction[] instructions;
-        public final Attributes attributes;
 
-        public Code(int maxStacks, int maxLocals, InstructionReader.Instruction[] instructions, Attributes attributes) {
+        public Code(int maxStacks, int maxLocals, InstructionReader.Instruction[] instructions) {
             this.maxStacks = maxStacks;
             this.maxLocals = maxLocals;
             this.instructions = instructions;
-            this.attributes = attributes;
         }
 
         public Map<Integer, InstructionReader.Instruction> getInstructions() {
