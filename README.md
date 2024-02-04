@@ -158,9 +158,15 @@ methodCount: 00 02
                     maxLocals: 0004 
                     codeLength: 0000 000b
                     byteCode: 1047 3c10 523d 1b1c 603e b1   ===转指令
-                        -10 bipush 0x47
-                        -3c istore1 保持值 slots
-                        -10 bipush 0x52
+                        -10 bipush 0x47 读取值 0x47 = 71 到操作数栈中
+                        -3c istore1 把操作数栈中的数值71拿出来存到 本地变量中
+                        -10 bipush 0x52 读取值 0x52 = 82 到操作数栈中
+                        -3d IStore2Inst 把操作数栈中的数值82拿出来存到 本地变量中
+                        -1b ILoad1Inst 把本地变量中的值71获取到加载到 操作数栈中
+                        -1c ILoad2Inst 把本地变量中的值82获取到加载到 操作数栈中
+                        -60 IAddInst 把操作数栈两个数值拿出来相加，结果153放到操作数栈中
+                        -3e IStore3Inst 把操作数栈中的数值153拿出来存到 本地变量中
+                        -b1 ReturnInst 设置stat状态为结束
                     exceptionTableLength: 00 00
                     codeAttributeCount: 00 02
                         - [0] attrNameIndex: 00 07  ==LineNumberTalbe
