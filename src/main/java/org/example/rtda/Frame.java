@@ -18,9 +18,9 @@ public class Frame {
 
     private final OperandStack operandStack;
 
-    private final Map<Integer, InstructionReader.Instruction> instructionMap;
+    public final byte[] byteCode;
 
-    private int pc;
+    public int pc = 0;
 
     public int nextPc;
 
@@ -92,16 +92,13 @@ public class Frame {
         }
     }
 
-    public Frame(int maxLocals,  int maxStacks, Map<Integer, InstructionReader.Instruction> instructionMap) {
+    public Frame(int maxLocals,  int maxStacks, byte[] byteCode) {
         this.localVars = new LocalVars(maxLocals);
         this.operandStack = new OperandStack(maxStacks);
-        this.instructionMap = instructionMap;
+        this.byteCode = byteCode;
+        this.pc = 0;
     }
 
-    public InstructionReader.Instruction getInst() {
-        this.pc = nextPc;
-        return this.instructionMap.get(this.pc);
-    }
 
     public String getLocalVars() {
         return this.localVars.toString();

@@ -133,22 +133,13 @@ public class ClassFile {
 
         public final int maxStacks;
         public final int maxLocals;
-        public final InstructionReader.Instruction[] instructions;
 
-        public Code(int maxStacks, int maxLocals, InstructionReader.Instruction[] instructions) {
+        public byte[] byteCode;
+
+        public Code(int maxStacks, int maxLocals, byte[] byteCode) {
             this.maxStacks = maxStacks;
             this.maxLocals = maxLocals;
-            this.instructions = instructions;
-        }
-
-        public Map<Integer, InstructionReader.Instruction> getInstructions() {
-            Map<Integer, InstructionReader.Instruction> map = new LinkedHashMap<>(instructions.length);
-            int pc = 0;
-            for (InstructionReader.Instruction instruction : instructions) {
-                map.put(pc, instruction);
-                pc += instruction.offset();
-            }
-            return map;
+            this.byteCode = byteCode;
         }
 
     }

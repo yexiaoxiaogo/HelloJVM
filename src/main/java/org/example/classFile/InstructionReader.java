@@ -11,10 +11,12 @@ import java.io.IOException;
  */
 public class InstructionReader {
 
-    public static Instruction read(int opCode, DataInputStream stm) throws IOException {
+
+    public static Instruction read(int opCode, byte[] bytes, int pc) throws IOException {
+
         switch (opCode) {
             case 0x10:
-                return new BiPushInst(stm.readByte());
+                return new BiPushInst(bytes[pc + 1]);
 
             case 0x1b:
                 return new ILoad1Inst();
@@ -38,6 +40,8 @@ public class InstructionReader {
             default:
                 return null;
         }
+
+
     }
 
     /**

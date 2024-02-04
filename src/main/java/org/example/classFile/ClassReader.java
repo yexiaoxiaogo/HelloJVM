@@ -93,13 +93,13 @@ public class ClassReader {
                 int codeLength = is.readInt();
                 // 读取转指令
                 byte[] byteCode = readBytes(is, codeLength);
-                InstructionReader.Instruction[] instructions = getInstruction(byteCode);
+
                 // exceptionTalbeLength 无用但是要消费掉
                 int exceptionTalbeLength = is.readUnsignedShort();
                 // 属性里，code类型属性的属性，消费掉里面的字节
                 int codeAttributeCount = is.readUnsignedShort();
                 readAttributes(is, codeAttributeCount, cpInfo);
-                attribute = new ClassFile.Code(maxStack, maxLocals, instructions);
+                attribute = new ClassFile.Code(maxStack, maxLocals, byteCode);
 
             } else {
                 // 其他的不管，读取掉length长度的内容即可
@@ -109,23 +109,6 @@ public class ClassReader {
             attributes.attributes[i] = attribute;
         }
         return attributes;
-    }
-
-    private static InstructionReader.Instruction[] getInstruction(byte[] byteCode) throws IOException {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteCode);
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        List<InstructionReader.Instruction> instructionList = new ArrayList<>();
-        while (dataInputStream.available() > 0) {
-            int opCode = dataInputStream.readUnsignedByte();
-            InstructionReader.Instruction read = InstructionReader.read(opCode, dataInputStream);
-            if (read == null) {
-                break;
-            }
-            instructionList.add(read);
-        }
-        InstructionReader.Instruction[] instructions = new InstructionReader.Instruction[instructionList.size()];
-        instructionList.toArray(instructions);
-        return instructions;
     }
 
     private static ClassFile.Methods readMethods(DataInputStream is, int methodsCount, ClassFile.ConstantPool cpInfo) throws IOException {
